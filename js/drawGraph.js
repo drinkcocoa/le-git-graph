@@ -304,10 +304,10 @@ async function drawGraph(commits, commitDict) {
       if (indexArray[i].includes(thisLineIndex) && indexArray[i + 1].includes(thisLineIndex)) {
         // Check if this is a direct parent relationship (already drawn in first loop)
         var isDirectParent = false;
-        if (commit.lineIndex === thisLineIndex) {
+        if (commit.lineIndex == thisLineIndex) {
           for (var parentItem of commit.parents) {
             var parent = commitDictGlobal[parentItem.node.oid];
-            if (parent != undefined && parent.lineIndex === thisLineIndex) {
+            if (parent != undefined && parent.lineIndex == thisLineIndex) {
               isDirectParent = true;
               break;
             }
@@ -324,7 +324,7 @@ async function drawGraph(commits, commitDict) {
         }
         // Compairing the last container width to the new lines drawn's X coordinate
         // Using the larger of the two as the new width for the container
-        maxX = Math.max(thisx,maxX);
+        maxX = Math.max(thisx, maxX);
       }
     }
   }
@@ -349,10 +349,10 @@ async function drawGraph(commits, commitDict) {
     });
   });
   // Only updating width when it has crossed the min-width of 100
-  if(maxX > 100){
+  if (maxX > 100) {
     // Providing space for 13 lines at a time
     // Any more than that can hamper the UI of the screen
-    maxX = Math.min(maxX,198)
+    maxX = Math.min(maxX, 198)
     // Updating the width of the svgContainer Element
     var svgContainer = document.querySelector('#graphSvg');
     svgContainer.style.width = maxX;
