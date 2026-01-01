@@ -268,9 +268,10 @@ async function drawGraph(commits, commitDict) {
     yPos += (thisCommitItem.offsetHeight - 1) / 2;
     // Drawing the commits dots. (This is more of a dummy and will be redrawn so that lines appear below circles)
     // The purpose of this first set of circles is to easily query the position of the commit dot.
+    // Round coordinates to integers to prevent sub-pixel rendering issues
     commits[i].cx = 30 + (commitXIndex * 14);
-    commits[i].cy = yPos;
-    commitsGraphContainer.innerHTML += '<circle cx="' + (30 + (commitXIndex * 14)) + '" cy="' + yPos + '" r="1" fill="' + commit.color + '" circlesha = "' + commit.oid + '"/>';
+    commits[i].cy = Math.round(yPos);
+    commitsGraphContainer.innerHTML += '<circle cx="' + (30 + (commitXIndex * 14)) + '" cy="' + Math.round(yPos) + '" r="1" fill="' + commit.color + '" circlesha = "' + commit.oid + '"/>';
     yPos += thisCommitItem.offsetHeight / 2;
   }
 
