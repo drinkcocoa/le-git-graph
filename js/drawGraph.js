@@ -275,6 +275,9 @@ async function drawGraph(commits, commitDict) {
   }
 
 
+  // Track drawn lines to avoid duplicates
+  var drawnLines = new Set();
+
   // Curve for connecting existing commits
   for (var i = 0; i < (commits.length - 1); i++) {
     var commit = commits[i];
@@ -287,6 +290,9 @@ async function drawGraph(commits, commitDict) {
         hasVisibleParents = true;
         var nextx = 30 + (14 * (indexArray[i + 1].indexOf(parent.lineIndex)));
         var nexty = document.querySelectorAll('[circlesha="' + commits[i + 1].oid + '"]')[0].cy.baseVal.value;
+        // Record this line to avoid drawing it again
+        var lineKey = thisx + ',' + thisy + ',' + nextx + ',' + nexty;
+        drawnLines.add(lineKey);
         drawCurve(commitsGraphContainer, thisx, thisy, nextx, nexty, lineColors[parent.lineIndex]);
       }
     }
@@ -306,7 +312,14 @@ async function drawGraph(commits, commitDict) {
         var thisy = document.querySelectorAll('[circlesha="' + commit.oid + '"]')[0].cy.baseVal.value;
         var nextx = 30 + (14 * (indexArray[i + 1].indexOf(thisLineIndex)));
         var nexty = document.querySelectorAll('[circlesha="' + commits[i + 1].oid + '"]')[0].cy.baseVal.value;
-        drawCurve(commitsGraphContainer, thisx, thisy, nextx, nexty, lineColors[thisLineIndex]);
+
+        // Only draw if this exact line hasn't been drawn before
+        var lineKey = thisx + ',' + thisy + ',' + nextx + ',' + nexty;
+        if (!drawnLines.has(lineKey)) {
+          drawCurve(commitsGraphContainer, thisx, thisy, nextx, nexty, lineColors[thisLineIndex]);
+          drawnLines.add(lineKey);
+        }
+
         // Compairing the last container width to the new lines drawn's X coordinate
         // Using the larger of the two as the new width for the container
         maxX = Math.max(thisx,maxX);
