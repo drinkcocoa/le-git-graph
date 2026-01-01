@@ -302,27 +302,13 @@ async function drawGraph(commits, commitDict) {
     for (var i = 0; i < (commits.length - 1); i++) {
       var commit = commits[i];
       if (indexArray[i].includes(thisLineIndex) && indexArray[i + 1].includes(thisLineIndex)) {
-        // Check if this is a direct parent relationship (already drawn in first loop)
-        var isDirectParent = false;
-        for (var parentItem of commit.parents) {
-          var parent = commitDict[parentItem.node.oid];
-          if (parent != undefined && parent.lineIndex === thisLineIndex) {
-            isDirectParent = true;
-            break;
-          }
-        }
-
-        // Only draw continuity lines when it's NOT a direct parent relationship
-        if (!isDirectParent) {
-          var thisx = 30 + (14 * (indexArray[i].indexOf(thisLineIndex)));
-          var thisy = document.querySelectorAll('[circlesha="' + commit.oid + '"]')[0].cy.baseVal.value;
-          var nextx = 30 + (14 * (indexArray[i + 1].indexOf(thisLineIndex)));
-          var nexty = document.querySelectorAll('[circlesha="' + commits[i + 1].oid + '"]')[0].cy.baseVal.value;
-          drawCurve(commitsGraphContainer, thisx, thisy, nextx, nexty, lineColors[thisLineIndex]);
-        }
+        var thisx = 30 + (14 * (indexArray[i].indexOf(thisLineIndex)));
+        var thisy = document.querySelectorAll('[circlesha="' + commit.oid + '"]')[0].cy.baseVal.value;
+        var nextx = 30 + (14 * (indexArray[i + 1].indexOf(thisLineIndex)));
+        var nexty = document.querySelectorAll('[circlesha="' + commits[i + 1].oid + '"]')[0].cy.baseVal.value;
+        drawCurve(commitsGraphContainer, thisx, thisy, nextx, nexty, lineColors[thisLineIndex]);
         // Compairing the last container width to the new lines drawn's X coordinate
         // Using the larger of the two as the new width for the container
-        var thisx = 30 + (14 * (indexArray[i].indexOf(thisLineIndex)));
         maxX = Math.max(thisx,maxX);
       }
     }
