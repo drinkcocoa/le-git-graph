@@ -302,20 +302,13 @@ async function drawGraph(commits, commitDict) {
     for (var i = 0; i < (commits.length - 1); i++) {
       var commit = commits[i];
       if (indexArray[i].includes(thisLineIndex) && indexArray[i + 1].includes(thisLineIndex)) {
-        // Check if this is a direct parent relationship (already drawn in first loop)
-        var isDirectParent = false;
-        if (commit.lineIndex == thisLineIndex) {
-          for (var parentItem of commit.parents) {
-            var parent = commitDictGlobal[parentItem.node.oid];
-            if (parent != undefined && parent.lineIndex == thisLineIndex) {
-              isDirectParent = true;
-              break;
-            }
-          }
-        }
+        // Check if the current commit belongs to this line. 
+        // If so, the connections (to parents) are already drawn by the first loop.
+        // We should skip the "continuity" string to avoid double drawing (overlay).
+        var isCommitOnLine = (commit.lineIndex == thisLineIndex);
 
-        // Only draw continuity lines when it's NOT a direct parent relationship
-        if (!isDirectParent) {
+        // Only draw continuity lines when the commit is NOT on this line (i.e. the line is passing through)
+        if (!isCommitOnLine) {
           var thisx = 30 + (14 * (indexArray[i].indexOf(thisLineIndex)));
           var thisy = document.querySelectorAll('[circlesha="' + commit.oid + '"]')[0].cy.baseVal.value;
           var nextx = 30 + (14 * (indexArray[i + 1].indexOf(thisLineIndex)));
