@@ -220,6 +220,8 @@ async function drawGraph(commits, commitDict) {
   // Clearing the graph container, so that the graph can be redrawn.
   commitsGraphContainer.innerHTML = "";
   commitsGraphContainer.style.height = commitsContainerHeight + 'px';
+  // Set viewBox for crisp vector rendering at all zoom levels
+  commitsGraphContainer.setAttribute('viewBox', '0 0 100 ' + commitsContainerHeight);
   var yPos = 0;
 
   // indexArray acts as a two dimensional array, which represents the structure of 
@@ -350,6 +352,8 @@ async function drawGraph(commits, commitDict) {
     // Updating the width of the svgContainer Element
     var svgContainer = document.querySelector('#graphSvg');
     svgContainer.style.width = maxX;
+    // Update viewBox to match new width for consistent rendering
+    svgContainer.setAttribute('viewBox', '0 0 ' + maxX + ' ' + commitsContainerHeight);
   }
 }
 
