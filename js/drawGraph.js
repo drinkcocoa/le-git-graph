@@ -3,6 +3,7 @@ var maxX = 100;
 
 // Draws a curve between two given [commit] points
 async function drawCurve(container, startx, starty, endx, endy, color) {
+  starty += 0.75; //
   var firstLineEndY = starty + ((endy - starty - 40) / 2);
   var secondLineStartY = firstLineEndY + 40;
   container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + startx + ' ' + firstLineEndY + ' C ' + startx + ' ' + (parseInt(firstLineEndY) + 20) + ' , ' + endx + ' ' + (parseInt(firstLineEndY) + 20) + ' , ' + endx + ' ' + (parseInt(firstLineEndY) + 40) + ' L ' + endx + ' ' + endy + '" stroke="' + color + '" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill = "#00000000"/>';
@@ -11,8 +12,9 @@ async function drawCurve(container, startx, starty, endx, endy, color) {
 // Draws an indication that there are parent commits, but not
 // shown on this page, because the parents are too old.
 async function drawDottedLine(container, startx, starty, color) {
+  starty += 0.75;
   container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + startx + ' ' + (starty + 10) + '" stroke="' + color + '" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill = "#00000000"/>';
-  container.innerHTML += '<path d = "M ' + startx + ' ' + (starty + 10) + ' L ' + startx + ' ' + (starty + 30) + '" stroke="' + color + '" stroke-width="1" stroke-dasharray="2,2" stroke-linecap="round" stroke-linejoin="round" fill = "#00000000"/>';
+  container.innerHTML += '<path d = "M ' + startx + ' ' + (starty + 10) + ' L ' + startx + ' ' + (starty + 30) + '" stroke="' + color + '" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill = "#00000000"/>';
 }
 
 // Used to keep track of which commit is hovered presently (if any)
