@@ -3,16 +3,28 @@ var maxX = 100;
 
 // Draws a curve between two given [commit] points
 async function drawCurve(container, startx, starty, endx, endy, color) {
-  var firstLineEndY = starty + ((endy - starty - 40) / 2);
+  // Round all coordinates to integers for pixel-perfect rendering
+  startx = Math.round(startx);
+  starty = Math.round(starty);
+  endx = Math.round(endx);
+  endy = Math.round(endy);
+
+  var firstLineEndY = Math.round(starty + ((endy - starty - 40) / 2));
   var secondLineStartY = firstLineEndY + 40;
-  container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + startx + ' ' + firstLineEndY + ' C ' + startx + ' ' + (firstLineEndY + 20) + ' , ' + endx + ' ' + (firstLineEndY + 20) + ' , ' + endx + ' ' + (firstLineEndY + 40) + ' L ' + endx + ' ' + endy + '" stroke="' + color + '" stroke-width="1" fill = "#00000000"/>';
+  var controlY1 = Math.round(firstLineEndY + 20);
+  var controlY2 = Math.round(firstLineEndY + 40);
+
+  container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + startx + ' ' + firstLineEndY + ' C ' + startx + ' ' + controlY1 + ' , ' + endx + ' ' + controlY1 + ' , ' + endx + ' ' + controlY2 + ' L ' + endx + ' ' + endy + '" stroke="' + color + '" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill = "#00000000"/>';
 }
 
 // Draws an indication that there are parent commits, but not
 // shown on this page, because the parents are too old.
 async function drawDottedLine(container, startx, starty, color) {
-  container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + startx + ' ' + (starty + 10) + '" stroke="' + color + '" stroke-width="1" fill = "#00000000"/>';
-  container.innerHTML += '<path d = "M ' + startx + ' ' + (starty + 10) + ' L ' + startx + ' ' + (starty + 30) + '" stroke="' + color + '" stroke-width="1" stroke-dasharray="2,2" fill = "#00000000"/>';
+  // Round coordinates to integers
+  startx = Math.round(startx);
+  starty = Math.round(starty);
+  container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + startx + ' ' + (starty + 10) + '" stroke="' + color + '" stroke-width="1" stroke-linecap="round" fill = "#00000000"/>';
+  container.innerHTML += '<path d = "M ' + startx + ' ' + (starty + 10) + ' L ' + startx + ' ' + (starty + 30) + '" stroke="' + color + '" stroke-width="1" stroke-linecap="round" stroke-dasharray="2,2" fill = "#00000000"/>';
 }
 
 // Used to keep track of which commit is hovered presently (if any)
