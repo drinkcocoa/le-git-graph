@@ -4,9 +4,9 @@ var maxX = 100;
 // Draws a curve between two given [commit] points
 async function drawCurve(container, startx, starty, endx, endy, color, offsetStart = false) {
   startx = Math.floor(startx);
-  starty = Math.floor(starty) + 1;
+  starty = Math.floor(starty);
   endx = Math.floor(endx);
-  endy = Math.floor(endy);
+  endy = Math.floor(endy) - 1;
   if (startx === endx) {
     container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + endx + ' ' + (endy + 1) + '" stroke="' + color + '" stroke-width="1" fill = "#00000000"/>';
   } else {
