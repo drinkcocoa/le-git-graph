@@ -2,10 +2,20 @@
 var maxX = 100;
 
 // Draws a curve between two given [commit] points
-async function drawCurve(container, startx, starty, endx, endy, color) {
-  var firstLineEndY = starty + ((endy - starty - 40) / 2);
-  var secondLineStartY = firstLineEndY + 40;
-  container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + startx + ' ' + firstLineEndY + ' C ' + startx + ' ' + (parseInt(firstLineEndY) + 20) + ' , ' + endx + ' ' + (parseInt(firstLineEndY) + 20) + ' , ' + endx + ' ' + (parseInt(firstLineEndY) + 40) + ' L ' + endx + ' ' + endy + '" stroke="' + color + '" stroke-width="1" fill = "#00000000"/>';
+async function drawCurve(container, startx, starty, endx, endy, color, offsetStart = false) {
+  startx = Math.floor(startx);
+  starty = Math.floor(starty) + 1;
+  endx = Math.floor(endx);
+  endy = Math.floor(endy);
+  if (startx === endx) {
+    container.innerHTML += '<path d = "M ' + startx + ' ' + starty + ' L ' + endx + ' ' + (endy + 1) + '" stroke="' + color + '" stroke-width="1" fill = "#00000000"/>';
+  } else {
+    var firstLineEndY = starty + ((endy - starty - 40) / 2);
+    var dStart = offsetStart
+      ? 'M ' + startx + ' ' + Math.floor(firstLineEndY)
+      : 'M ' + startx + ' ' + starty + ' L ' + startx + ' ' + Math.floor(firstLineEndY);
+    container.innerHTML += '<path d = "' + dStart + ' C ' + startx + ' ' + (Math.floor(firstLineEndY) + 20) + ' , ' + endx + ' ' + (Math.floor(firstLineEndY) + 20) + ' , ' + endx + ' ' + (Math.floor(firstLineEndY) + 40) + ' L ' + endx + ' ' + endy + '" stroke="' + color + '" stroke-width="1" fill = "#00000000"/>';
+  }
 }
 
 // Draws an indication that there are parent commits, but not
@@ -270,7 +280,7 @@ async function drawGraph(commits, commitDict) {
     // The purpose of this first set of circles is to easily query the position of the commit dot.
     commits[i].cx = 30 + (commitXIndex * 14);
     commits[i].cy = yPos;
-    commitsGraphContainer.innerHTML += '<circle cx="' + (30 + (commitXIndex * 14)) + '" cy="' + yPos + '" r="1" fill="' + commit.color + '" circlesha = "' + commit.oid + '"/>';
+    commitsGraphContainer.innerHTML += '<circle cx="' + (30 + (commitXIndex * 14)) + '" cy="' + yPos + '" r="0" fill="' + commit.color + '" circlesha = "' + commit.oid + '"/>';
     yPos += thisCommitItem.offsetHeight / 2;
   }
 
@@ -279,6 +289,13 @@ async function drawGraph(commits, commitDict) {
   for (var i = 0; i < (commits.length - 1); i++) {
     var commit = commits[i];
     var hasVisibleParents = false;
+    var hasVerticalParent = false;
+    for (var parentItem of commit.parents) {
+      if (commitDict[parentItem.node.oid] && commitDict[parentItem.node.oid].lineIndex == commit.lineIndex) {
+        hasVerticalParent = true;
+        break;
+      }
+    }
     for (parentItem of commit.parents) {
       var parent = commitDict[parentItem.node.oid];
       var thisx = document.querySelectorAll('[circlesha="' + commit.oid + '"]')[0].cx.baseVal.value;
@@ -287,7 +304,9 @@ async function drawGraph(commits, commitDict) {
         hasVisibleParents = true;
         var nextx = 30 + (14 * (indexArray[i + 1].indexOf(parent.lineIndex)));
         var nexty = document.querySelectorAll('[circlesha="' + commits[i + 1].oid + '"]')[0].cy.baseVal.value;
-        drawCurve(commitsGraphContainer, thisx, thisy, nextx, nexty, lineColors[parent.lineIndex]);
+        var isVertical = (parent.lineIndex == commit.lineIndex);
+        var offsetStart = hasVerticalParent && !isVertical;
+        drawCurve(commitsGraphContainer, thisx, thisy, nextx, nexty, lineColors[parent.lineIndex], offsetStart);
       }
     }
     if (!hasVisibleParents) {
