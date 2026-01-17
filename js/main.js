@@ -13,8 +13,34 @@ var windowPath = windowUrl.pathname;
 var windowPathArray = windowPath.split("/");
 
 if (pathsToExclude.includes(windowPathArray[1]) == false) {
-    // Initial attempt to add button
-    addCommitsButton();
+    // Wait for the navigation bar to be fully rendered before adding the button
+    // This prevents the flickering issue where the button appears, disappears, then reappears
+    function tryAddCommitsButton() {
+        var navBar = document.querySelector('nav[aria-label="Repository"] ul[role="list"]') ||
+                     document.querySelector('ul[class*="UnderlineItemList"]');
+
+        if (navBar) {
+            console.log('[Le Git Graph] Navigation bar found, adding Commits tab');
+            addCommitsButton();
+        } else {
+            console.log('[Le Git Graph] Navigation bar not ready yet, will retry...');
+        }
+    }
+
+    // Use requestAnimationFrame for smooth initialization after DOM is ready
+    // This waits for the next browser paint, ensuring Turbo has rendered the page
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            requestAnimationFrame(function() {
+                setTimeout(tryAddCommitsButton, 200);
+            });
+        });
+    } else {
+        // DOM is already loaded
+        requestAnimationFrame(function() {
+            setTimeout(tryAddCommitsButton, 200);
+        });
+    }
 
     // GitHub uses Turbo for dynamic page rendering, which can remove our button.
     // Listen for Turbo events and re-add the button when necessary.
@@ -52,5 +78,5 @@ if (pathsToExclude.includes(windowPathArray[1]) == false) {
             subtree: true
         });
         console.log('[Le Git Graph] MutationObserver started watching for navigation changes');
-    }, 500);
+    }, 1000);
 }
