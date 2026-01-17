@@ -1,5 +1,12 @@
 var isCommitsTabOpen = false;
 function addCommitsButton() {
+    // Check if the Commits tab already exists to prevent duplicates
+    var existingTab = document.getElementById('commits-tab');
+    if (existingTab) {
+        console.log('[Le Git Graph] Commits tab already exists, skipping addition');
+        return;
+    }
+
     // parentObject is the bar which contains all the
     // tab buttons, (code, issues, pull requests,..)
 
