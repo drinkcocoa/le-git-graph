@@ -6,7 +6,10 @@ function addCommitsButton() {
     // Try multiple selectors to find the navigation bar (GitHub's DOM structure changes over time)
     var parentObject = null;
     var selectors = [
-        '.js-responsive-underlinenav ul.UnderlineNav-body',  // Current GitHub structure (2025+)
+        'nav[aria-label="Repository"] ul[role="list"]',      // Current GitHub structure (2026+ with CSS Modules)
+        'ul[class*="UnderlineItemList"]',                     // CSS Modules fallback (pattern matching)
+        'nav[class*="LocalNavigation"] ul',                   // LocalNavigation module fallback
+        '.js-responsive-underlinenav ul.UnderlineNav-body',  // Previous GitHub structure (2025)
         'ul.UnderlineNav-body',                               // Fallback: just the class
         '.UnderlineNav-body',                                 // Fallback: without ul
         'nav.UnderlineNav ul',                                // Fallback: nav element
