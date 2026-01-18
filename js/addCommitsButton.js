@@ -1,4 +1,6 @@
 var isCommitsTabOpen = false;
+var addCommitsButtonRetries = 0;
+
 function addCommitsButton() {
     // Prevent duplicate tabs
     if (document.getElementById('commits-tab')) {
@@ -116,6 +118,14 @@ function addCommitsButton() {
     } catch (e) {
         console.error('[Le Git Graph] Failed to insert Commits tab');
         return;
+    }
+
+    // GitHub may rebuild DOM during initial load, verify and retry once
+    if (addCommitsButtonRetries === 0) {
+        addCommitsButtonRetries++;
+        setTimeout(function() {
+            addCommitsButton();
+        }, 300);
     }
 
     function closeCommitsTab() {
