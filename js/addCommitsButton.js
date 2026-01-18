@@ -1,4 +1,5 @@
 var isCommitsTabOpen = false;
+
 function addCommitsButton() {
     // Prevent duplicate tabs
     if (document.getElementById('commits-tab')) {
@@ -8,7 +9,7 @@ function addCommitsButton() {
     // Find the navigation bar with fallback selectors
     var parentObject = null;
     var selectors = [
-        'nav[aria-label="Repository"] ul',      // Current GitHub (2026+)
+        'nav[aria-label="Repository"] ul',                    // Current GitHub (2026+)
         'ul[class*="UnderlineItemList"]',                     // CSS Modules fallback
         'nav[class*="LocalNavigation"] ul',                   // LocalNavigation fallback
     ];
@@ -117,6 +118,25 @@ function addCommitsButton() {
         console.error('[Le Git Graph] Failed to insert Commits tab');
         return;
     }
+
+    // Watch for DOM changes during initial load and re-add if GitHub removes the tab
+    var observer = new MutationObserver(function() {
+        if (!document.getElementById('commits-tab')) {
+            addCommitsButton();
+        }
+    });
+
+    // Observe document.body with subtree to catch nav replacement
+    observer.observe(document.body, { 
+        childList: true,
+        subtree: true
+    });
+
+    // Stop observing after initial page load completes (5 seconds)
+    setTimeout(function() {
+        observer.disconnect();
+    }, 5000);
+
 
     function closeCommitsTab() {
         isCommitsTabOpen = false;
