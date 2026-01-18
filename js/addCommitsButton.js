@@ -1,5 +1,4 @@
 var isCommitsTabOpen = false;
-var addCommitsButtonRetries = 0;
 
 function addCommitsButton() {
     // Prevent duplicate tabs
@@ -120,13 +119,20 @@ function addCommitsButton() {
         return;
     }
 
-    // GitHub may rebuild DOM during initial load, verify and retry once
-    if (addCommitsButtonRetries === 0) {
-        addCommitsButtonRetries++;
-        setTimeout(function() {
+    // Watch for DOM changes during initial load and re-add if GitHub removes the tab
+    var observer = new MutationObserver(function() {
+        if (!document.getElementById('commits-tab')) {
+            observer.disconnect();
             addCommitsButton();
-        }, 300);
-    }
+        }
+    });
+
+    observer.observe(parentObject, { childList: true });
+
+    // Stop observing after initial page load completes (5 seconds)
+    setTimeout(function() {
+        observer.disconnect();
+    }, 5000);
 
     function closeCommitsTab() {
         isCommitsTabOpen = false;
